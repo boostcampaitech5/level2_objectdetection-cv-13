@@ -1,0 +1,1 @@
+exp17 은 /config 폴더 내에 붙여넣으시고 train.py 는 /mmdetection 에 놓고 train.py 실행 시키시면 됩니다!
