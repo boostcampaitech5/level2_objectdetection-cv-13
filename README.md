@@ -1,7 +1,6 @@
 # level2_objectdetection-cv-13
 # Project 연구일지
 
-[Object Detection exp report (황준하)](https://www.notion.so/b5964b773fec4aef9f55a9363e36628e?pvs=21)
 
 ### 아쉬웠던 점
 
