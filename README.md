@@ -10,24 +10,9 @@
 - validation dataset 으로 각 모델의 precision, recall 을 따로 뽑아서 좀 더 근거있는 ensemble 을 했어야하는것
 - backbone 모델로 파라미터 조정해가며 많이 돌린 후 최종 파라미터로 큰 backbone 사용해보지 못한것
 
-# Faster R-CNN 실험
-
-| 이름 | 모델 | Fold | 세부  | mAP  | LB |
-| --- | --- | --- | --- | --- | --- |
-| rcnn_base | Faster R-CNN |   -   | resnet50, 데이터셋 전부 사용, 학습시간: 1시간  | mAP: 0.3110, mAP_50: 0.4940 | 0.4234 |
-| rcnn0_json | Faster R-CNN | 0 | resnet50, 데이터셋 80% 사용, lr=0.02, SGD  | mAP: 0.1530, mAP_50: 0.2730 |  |
-| rcnn0_pretrained | Faster R-CNN | 0 | resent50, Faster R-CNN의 학습된 가중치를 가져옴. mAP_s 성능 많이 향상 | mAP: 0.2970, mAP_50: 0.4560 | 0.4424 |
-| rcnn0_1024 | Faster R-CNN | 0 | resnet50, 학습시간: 2시간 resize=1024, bbox_s 에 대한 mAP가 매우 낮게 나옴(0.002) | mAP: 0.35, mAP_50: 0.489 |  |
-| rcnn0_r101_1024 | Faseter R-CNN | 0 | 전반적으로 모든 지표에서 resnet50을 사용할 때 보다 성능 향상. 하지만 mAP_s에 대해서는 성능이 하락  | mAP: 0.3670, mAP_50: 0.5000 | 0.4870 |
-| rcnn0_r101_pretrained_adam-00005 | Faster R-CNN | 0 | optimizer=adam  생각보다 lr을 많이 작게 설정해 주었을 때 성능이 좋게 나왔음, lr=0.00005 | mAP: 0.3910, mAP_50: 0.5250 | 0.5139 |
-| retinanet5_x101_pretrained_adam-000025 | RetinaNet | 4 | 모든 설정은 rcnn0_r101_pretrained_adam-00005와 동일, (추가로 retinanet은 cfg.model.bbox_head.num_classes=10을 설정해 주어야 함), mAP_m과 mAP_s에서 많은 성능 향상을 보임  | mAP:0.4030, mAP_50: 0.5420 |  |
-| exp5_retinanet_r101_fpn_1x_pseudo | RetinaNet | pseudo fold0 | 기존 보다 성능이 많이 향상되었지만 val score 과 leader board score의 차이가 너무 큰 문제 발생. 오라벨링 된 데이터에 대해 과적합이 발생한 것 같음 → pseudo labeling 데이터는 수렴하는 순간까지만 사용해서 학습하기 (과적합 방지를 위해) → pseudo labeling 기준 높여보기  → 기존 데이터로 fine-tuning 진행하기 → exp6 결과 참고 → fine-tuning진행시 augmentation 많이 적용해보기 → pseudo labeling으로 학습시 augmentation 많이 적용해보기 → yolox 이용해서 실험(기본 설정으로 이미 다양한 augmentation이 적용) | mAP: 0.4670, mAP_50: 0.6270 | 0.5830 |
-| exp6_finetune_from_exp5 | RetinaNet | 0 | 원래 데이터에 대해 단순히 fine-tuning 진행 + cosinannealing 원본 정답으로 한번더 학습을 시켜주니 validation dataset에 대해서 엄청난 성능 향상을 보여주었지만, LB 결과는 오히려 하락한 모습을 보여주었다.  | mAP: 0.6090, mAP_50: 0.7520 | 0.5779  |
-| exp11_yolox_filtered | yolox | psudo fold1 | 오라벨된 데이터에 대한 학습을 최소화 하기위해 box의 area가 10000 이하인 box는 labeling에서 제외 → 최종 mAP에 대해서는 큰 차이가 없었지만 mAP_s은  0.003으로 굉장히 낮은 모습을 보여주었다.   | mAP: 0.472, mAP_50: 0.585 |  |
-
 # 실험 리포트
 
-## ****Introduction****
+## Introduction
 
 총 10 종류(일반 쓰레기, 종이, 상자, 금속, 유리, 플라스틱, 스티로폼, 비닐봉지, 베터리, 옷)의 쓰레기가 찍힌 사진 속에서 각각의 쓰레기 위치를 최대한 정확히 localization하고 쓰레기의 종류를 classification 해야하는 문제
 
@@ -44,16 +29,6 @@
 - **오라벨된 데이터가 다수 존재한다.** 
   → 라벨링을 일일이 수정할 수 없기 때문에 오히려 데이터셋의 이러한 특징을 이용할 수 있는 방법을 고민 
   → 애초에 라벨링의 기준이 애매하고 오라벨 된 데이터가 많다면, 정확한 라벨링은 할 수 없더라도 pseudo labeling을 통해 절대적인 학습 데이터의 양을 늘려주는 것이 더 효과적일 것이라고 판단
-
-![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled.png)
-
-![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%201.png)
-
-![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%202.png)
-
-![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%203.png)
-
-![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%204.png)
 
 ## Related work & Method
 
@@ -95,7 +70,7 @@ Pseudo-labeling은 지도학습을 통해 1차적으로 학습된 모델(teacher
 - 오라벨된 데이터에 대해 과적합 되는 것을 막기위해 **다양한 augmentation**을 적용해 보고 싶었고, 
   이러한 관점에서 기본적으로 다양한 augmentation(Mosaic, RandomAffine, MixUp …)이 적용되어 있는 yolox가 적절할 것으로 판단
 
-**cascadeRcnn**
+**CascadeRCNN**
 
 - pseudo labeling은 swin을 백본을 하는 cascade rcnn의 결과로 진행
 - 최대한 큰 모델을 사용하기 위해 backbone은 transformer 기반의 swin_L 사용
@@ -110,16 +85,6 @@ Pseudo-labeling은 지도학습을 통해 1차적으로 학습된 모델(teacher
 
 (val 기준)
 
-- 그래프
-
-  Faster RCNN
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%205.png)
-
-  Faster RCNN BackBone 비교 (r101 vs x101)
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%206.png)
-
 | 모델         | BackBone   | 내용                         | mAP    | mAP50  |
 | ------------ | ---------- | ---------------------------- | ------ | ------ |
 | Faster R-CNN | Resnet50   | -                            | 0.1530 | 0.2730 |
@@ -132,16 +97,6 @@ Pseudo-labeling은 지도학습을 통해 1차적으로 학습된 모델(teacher
 - 백본도 크기가 커짐에 따라 성능이 향상되었지만 Resnext101의 경우 Resnet50 보다 오히려 성능이 하락하는 모습을 보여주었다.
 
 ### optimizer & lr
-
-- 그래프
-
-  Faster R-CNN lr 비교
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%207.png)
-
-  Retinanet BackBone 비교 (x101 vs r101)
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%208.png)
 
 | 모델         | BackBone   | 내용            | mAP    | mAP50  |
 | ------------ | ---------- | --------------- | ------ | ------ |
@@ -162,20 +117,6 @@ Pseudo-labeling은 지도학습을 통해 1차적으로 학습된 모델(teacher
 - train set과 val set의 경우 pseudo labeling dataset을 만든 후 stratified group kfold 이용
 
 - Yolox의 경우 시간이 부족해 기본 설정으로만 실험 진행
-
-- 그래프
-
-  Faster RCNN
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%209.png)
-
-  Retinanet
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%2010.png)
-
-  Yolox 
-
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%2011.png)
 
 | 모델         | BackBone  | 내용                            | mAP    | mAP50  |
 | ------------ | --------- | ------------------------------- | ------ | ------ |
@@ -210,7 +151,7 @@ Pseudo-labeling은 지도학습을 통해 1차적으로 학습된 모델(teacher
 
 ### 한계 및 아쉬운 점
 
-- 처음 pseudo labeling dataset을 만들때 원본 데이터셋으로 fine-tuning 해볼 것을 고려하여 validation set은 psuedo dataset에 포함되지 않도록 만들었어야 했는데, 그 부분을 미리 고려하지 못한점이 아쉽다.
+- 처음 pseudo labeling dataset을 만들때 원본 데이터셋으로 fine-tuning 해볼 것을 고려하여 validation set은 psuedo labeling dataset에 포함되지 않도록 만들었어야 했는데, 그 부분을 미리 고려하지 못한점이 아쉽다.
 - 또한 작은 박스에 대해 filtering을 거친 dataset에 대해서도 실험해보지 못한 점이 아쉽다. 전반적으로 시간이 부족해서 더 개선시킬 아이디어가 있었음에도 시도해 보지 못한점이 아쉽다.
 - 또한 대회 특성상 ensemble을 하는 것이 최종 결과를 향상시키는데 많은 영향을 미쳤는데, pseudo labeling을 사용할 경우 teacher 모델의 결과를 학습하여 모델의 다양성이 감소하였고 모델의 다양성을 필요로 하는 ensemble에는 pseudo labeling이 불리할 것이라는 생각을 미리하지 못했던 점이 아쉽다.
 
@@ -262,7 +203,7 @@ HTC RCNN 실험 후기
 
   - 준하님 server와 내 server 각각에서 학습 한 같은 model의 validation score( 특히 mAP_m과 mAP_s) 최대 2 ~ 3% 차이
 
-  ![Untitled](Project%20%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%80%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8C%E1%85%B5%20d567871388a74d63a6cda4ac5e86d3b2/Untitled%2012.png)
+![yolov8](https://github.com/boostcampaitech5/level2_objectdetection-cv-13/assets/95335531/a249ffe0-b42b-4e7d-b288-4820a28b7128)
 
 ensemble 실험 후기
 
