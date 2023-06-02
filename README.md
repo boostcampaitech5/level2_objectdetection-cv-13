@@ -22,8 +22,7 @@
 | rcnn0_r101_pretrained_adam-00005 | Faster R-CNN | 0 | optimizer=adam  생각보다 lr을 많이 작게 설정해 주었을 때 성능이 좋게 나왔음, lr=0.00005 | mAP: 0.3910, mAP_50: 0.5250 | 0.5139 |
 | retinanet5_x101_pretrained_adam-000025 | RetinaNet | 4 | 모든 설정은 rcnn0_r101_pretrained_adam-00005와 동일, (추가로 retinanet은 cfg.model.bbox_head.num_classes=10을 설정해 주어야 함), mAP_m과 mAP_s에서 많은 성능 향상을 보임  | mAP:0.4030, mAP_50: 0.5420 |  |
 | exp5_retinanet_r101_fpn_1x_pseudo | RetinaNet | pseudo fold0 | 기존 보다 성능이 많이 향상되었지만 val score 과 leader board score의 차이가 너무 큰 문제 발생. 오라벨링 된 데이터에 대해 과적합이 발생한 것 같음 → pseudo labeling 데이터는 수렴하는 순간까지만 사용해서 학습하기 (과적합 방지를 위해) → pseudo labeling 기준 높여보기  → 기존 데이터로 fine-tuning 진행하기 → exp6 결과 참고 → fine-tuning진행시 augmentation 많이 적용해보기 → pseudo labeling으로 학습시 augmentation 많이 적용해보기 → yolox 이용해서 실험(기본 설정으로 이미 다양한 augmentation이 적용) | mAP: 0.4670, mAP_50: 0.6270 | 0.5830 |
-| exp6_finetune_from_exp5 | RetinaNet | 0 | 원래 데이터에 대해 단순히 fine-tuning 진행 + cosinannealing 
-원본 정답으로 한번더 학습을 시켜주니 validation dataset에 대해서 엄청난 성능 향상을 보여주었지만, LB 결과는 오히려 하락한 모습을 보여주었다.  | mAP: 0.6090, mAP_50: 0.7520 | 0.5779  |
+| exp6_finetune_from_exp5 | RetinaNet | 0 | 원래 데이터에 대해 단순히 fine-tuning 진행 + cosinannealing 원본 정답으로 한번더 학습을 시켜주니 validation dataset에 대해서 엄청난 성능 향상을 보여주었지만, LB 결과는 오히려 하락한 모습을 보여주었다.  | mAP: 0.6090, mAP_50: 0.7520 | 0.5779  |
 | exp11_yolox_filtered | yolox | psudo fold1 | 오라벨된 데이터에 대한 학습을 최소화 하기위해 box의 area가 10000 이하인 box는 labeling에서 제외 → 최종 mAP에 대해서는 큰 차이가 없었지만 mAP_s은  0.003으로 굉장히 낮은 모습을 보여주었다.   | mAP: 0.472, mAP_50: 0.585 |  |
 
 # 실험 리포트
