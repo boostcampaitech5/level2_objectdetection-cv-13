@@ -14,17 +14,13 @@
 
 | 이름 | 모델 | Fold | 세부  | mAP  | LB |
 | --- | --- | --- | --- | --- | --- |
-| rcnn_base | Faster R-CNN |   -   | resnet50, 데이터셋 전부 사용, 학습시간: 1시간  | mAP: 0.3110 
-mAP_50: 0.4940 | 0.4234 |
-|  rcnn0_json | Faster R-CNN | 0 | resnet50, 데이터셋 80% 사용, lr=0.02, SGD  | mAP: 0.1530, mAP_50: 0.2730 |  |
+| rcnn_base | Faster R-CNN |   -   | resnet50, 데이터셋 전부 사용, 학습시간: 1시간  | mAP: 0.3110, mAP_50: 0.4940 | 0.4234 |
+| rcnn0_json | Faster R-CNN | 0 | resnet50, 데이터셋 80% 사용, lr=0.02, SGD  | mAP: 0.1530, mAP_50: 0.2730 |  |
 | rcnn0_pretrained | Faster R-CNN | 0 | resent50, Faster R-CNN의 학습된 가중치를 가져옴. mAP_s 성능 많이 향상 | mAP: 0.2970, mAP_50: 0.4560 | 0.4424 |
 | rcnn0_1024 | Faster R-CNN | 0 | resnet50, 학습시간: 2시간 resize=1024, bbox_s 에 대한 mAP가 매우 낮게 나옴(0.002) | mAP: 0.35, mAP_50: 0.489 |  |
 | rcnn0_r101_1024 | Faseter R-CNN | 0 | 전반적으로 모든 지표에서 resnet50을 사용할 때 보다 성능 향상. 하지만 mAP_s에 대해서는 성능이 하락  | mAP: 0.3670, mAP_50: 0.5000 | 0.4870 |
-| rcnn0_r101_pretrained_adam-00005 | Faster R-CNN | 0 | optimizer=adam  생각보다 lr을 많이 작게 설정해 주었을 때 성능이 좋게 나왔음 
-lr=0.00005 | mAP: 0.3910, mAP_50: 0.5250 | 0.5139 |
-| retinanet5_x101_pretrained_adam-000025 | RetinaNet | 4 | 모든 설정은 rcnn0_r101_pretrained_adam-00005와 동일
-(추가로 retinanet은 cfg.model.bbox_head.num_classes=10을 설정해 주어야 함) 
-mAP_m과 mAP_s에서 많은 성능 향상을 보임  | mAP: 0.4030, mAP_50: 0.5420 |  |
+| rcnn0_r101_pretrained_adam-00005 | Faster R-CNN | 0 | optimizer=adam  생각보다 lr을 많이 작게 설정해 주었을 때 성능이 좋게 나왔음, lr=0.00005 | mAP: 0.3910, mAP_50: 0.5250 | 0.5139 |
+| retinanet5_x101_pretrained_adam-000025 | RetinaNet | 4 | 모든 설정은 rcnn0_r101_pretrained_adam-00005와 동일, (추가로 retinanet은 cfg.model.bbox_head.num_classes=10을 설정해 주어야 함), mAP_m과 mAP_s에서 많은 성능 향상을 보임  | mAP:0.4030, mAP_50: 0.5420 |  |
 | exp5_retinanet_r101_fpn_1x_pseudo | RetinaNet | pseudo fold0 | 기존 보다 성능이 많이 향상되었지만 val score 과 leader board score의 차이가 너무 큰 문제 발생. 오라벨링 된 데이터에 대해 과적합이 발생한 것 같음
 → pseudo labeling 데이터는 수렴하는 순간까지만 사용해서 학습하기 (과적합 방지를 위해)
 → pseudo labeling 기준 높여보기 
