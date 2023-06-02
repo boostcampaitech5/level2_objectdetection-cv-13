@@ -15,10 +15,3 @@
     <td align="center"><a href="https://github.com/JunOnJuly"><img src="https://avatars.githubusercontent.com/u/97649331?v=4" width="100px;" alt=""/><br /><sub><b>성지훈</b></sub></a><br />
   </tr>
 </table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
